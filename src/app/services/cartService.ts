@@ -10,8 +10,14 @@ export class CartService {
     this.loadCartFromLocalStorage();
   }
 
+   // Check if we're in a browser environment
+   private isBrowser(): boolean {
+    return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  }
+
   // Load cart from localStorage
   private loadCartFromLocalStorage() {
+    if (!this.isBrowser()) return;
     const savedCart = localStorage.getItem(this.localStorageKey);
     if (savedCart) {
       this.cartSubject.next(JSON.parse(savedCart));

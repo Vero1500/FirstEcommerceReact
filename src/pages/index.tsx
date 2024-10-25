@@ -5,7 +5,7 @@ import type { AppProps } from 'next/app'
 import Header from '../app/components/Header';
 import { CartService } from '../app/services/cartService';  // We'll implement this service similar to Angular's cartService
 import { Cart } from '../app/models/cart';
-import Home from './home';
+import Home from '../app/components/home';
 
 const cartService = new CartService();
 

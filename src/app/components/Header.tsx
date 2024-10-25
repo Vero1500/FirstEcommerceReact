@@ -1,12 +1,12 @@
 // components/Header.tsx
 import React, { useState } from 'react';
 import { Cart } from '../models/cart';
-import { AppBar, Toolbar, IconButton, Badge, Menu, MenuItem, Typography, Button, Divider } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Badge, Menu, MenuItem, Typography, Button, Divider, Link } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
-import { Link, BrowserRouter } from 'react-router-dom';
+import { CartService } from '../services/cartService';
 
-
+const cartService = new CartService();
 type HeaderProps = {
   cart: Cart;
 };
@@ -22,26 +22,17 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
     setAnchorEl(null);
   };
   return (
-    // <header>
-    //   <h1>My Store</h1>
-    //   <div>
-    //     Cart ({cart.items.length} items)
-    //   </div>
-    // </header>
     <AppBar position="static" sx={{ padding: '0 20px', display: 'flex', justifyContent: 'center' }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        {/* <Typography variant="h6" component={Link} to="/home" color="inherit" sx={{ textDecoration: 'none' }}>
+        <Link href="/" color="inherit" sx={{ textDecoration: 'none' }}>
           E-commerce React
-        </Typography> */}
+        </Link>
 
         {/* Cart Icon with Badge */}
-        <IconButton color="inherit" onClick={handleMenuOpen}>
-          <Badge badgeContent={0} color="error" invisible={!0}>
+        <IconButton color="inherit" onClick={handleMenuOpen}> 
+          <Badge badgeContent={cart.items.length} color="error" invisible={!cart.items.length}>
             <ShoppingCartIcon />
-          </Badge> 
-          {/* <Badge badgeContent={itemsQuantity} color="error" invisible={!itemsQuantity}>
-            <ShoppingCartIcon />
-          </Badge> */}
+          </Badge>
         </IconButton>
 
         {/* Menu with Cart Details */}
@@ -49,9 +40,8 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
           <div style={{ padding: '16px', minWidth: '200px' }}>
             {/* Items Count and View Cart */}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              {/* <Typography>{itemsQuantity} Items</Typography> */}
-              <Typography> Items</Typography>
-              <Button component={Link} to="/cart" color="primary" size="small" onClick={handleMenuClose}>
+              <Typography>{cart.items.length} Items</Typography>
+              <Button variant='text' href="/cart" color="primary" size="small" onClick={handleMenuClose}>
                 View Cart
               </Button>
             </div>
@@ -87,8 +77,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
             {/* Total and Actions */}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', alignItems: 'center' }}>
               <Typography>Total:</Typography>
-              {/* <Typography sx={{ fontWeight: 600 }}>${getTotal(cart.items).toFixed(2)}</Typography> */}
-              <Typography sx={{ fontWeight: 600 }}>TOTAL</Typography>
+              <Typography sx={{ fontWeight: 600 }}>${cartService.getTotal().toFixed(2)}</Typography>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
@@ -105,8 +94,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
 
               {/* Go to Cart Button */}
               <IconButton
-                component={Link}
-                to="/cart"
+                href="/cart"
                 sx={{ color: 'white', backgroundColor: '#388e3c', ':hover': { backgroundColor: '#2e7d32' } }}
                 onClick={handleMenuClose}
               >

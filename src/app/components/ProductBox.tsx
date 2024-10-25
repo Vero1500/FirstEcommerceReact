@@ -1,8 +1,9 @@
 // components/product-box/ProductBox.tsx
 import React from 'react';
-import { Card, CardContent, CardMedia, IconButton, Typography } from '@mui/material';
+import { Card, CardContent, CardMedia, IconButton, Typography, Box  } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { Product } from '../models/product'; // Adjust the import path based on your project structure
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 type ProductBoxProps = {
   fullWidthMode?: boolean;

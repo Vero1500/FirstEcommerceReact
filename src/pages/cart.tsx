@@ -12,8 +12,13 @@ import {
   TableHead,
   TableRow,
   IconButton,
+  Typography,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import RemoveIcon from "@mui/icons-material/Remove";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { Link } from "react-router-dom";
 import Header from '../app/components/Header';
 
 const cartService = new CartService();
@@ -21,6 +26,7 @@ const cartService = new CartService();
 const CartPage = () => {
   const [cart, setCart] = useState<Cart>({ items: [] })
   const [dataSource, setDataSource] = useState<CartItem[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     const subscription = cartService.cart$.subscribe((_cart) => {
@@ -28,10 +34,17 @@ const CartPage = () => {
       setDataSource(_cart.items);
     });
 
+    setIsHydrated(true);
+
     // Load initial cart items
     cartService.getCartItems();
     return () => subscription.unsubscribe();
   }, []);
+
+  if (!isHydrated) {
+    // Avoids rendering client-specific content before hydration is complete
+    return <div>Loading...</div>;
+  }
 
   const getTotal = (items: CartItem[]): number => cartService.getTotal();
 

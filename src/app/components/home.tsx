@@ -1,11 +1,14 @@
 // pages/home.tsx
 import React, { useEffect, useState } from 'react';
+import { Box, Drawer, Grid, Container } from '@mui/material';
 import ProductsHeader from './ProductsHeader';
 import Filters from './Filters';
 import ProductBox from './ProductBox';
 import { CartService } from '../services/cartService';
 import StoreService from '../services/storeService';
 import { Product } from '../models/product';
+
+// import { useCart } from '../context/CartContext';
 
 // Equivalent of the ROWS_HEIGHT mapping
 const ROWS_HEIGHT: { [id: number]: number } = { 1: 400, 3: 335, 4: 350 };
@@ -62,23 +65,38 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <ProductsHeader
-        onColumnsCountChange={onColumnsCountChange}
-        onSortChange={onSortChange}
-        onItemsCountChange={onItemsCountChange}
-      />
-      <Filters onShowCategory={onShowCategory} />
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
-        {products?.map((product) => (
-          <ProductBox
-            key={product.id}
-            product={product}
-            onAddToCart={() => onAddToCart(product)}
+    <Container maxWidth="xl" className="min-h-full border-x">
+      <Box sx={{ display: 'flex' }}>
+       
+        {/* Drawer for Filters */}
+        <Drawer
+          variant="permanent"
+          open
+          sx={{ width: 240, flexShrink: 0, [`& .MuiDrawer-paper`]: { width: 240, boxSizing: 'border-box' } }}
+        >
+          <Box p={3}>
+            <Filters onShowCategory={onShowCategory} />
+          </Box>
+        </Drawer>
+         {/* Main Content */}
+         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <ProductsHeader
+            onColumnsUpdated={onColumnsCountChange}
+            onSortUpdated={onSortChange}
+            onItemsUpdated={onItemsCountChange}
           />
-        ))}
-      </div>
-    </div>
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)` }}>
+            {products?.map((product) => (
+              <ProductBox
+                key={product.id}
+                product={product}
+                onAddToCart={() => onAddToCart(product)}
+              />
+            ))}
+          </div>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

@@ -67,7 +67,8 @@ export class CartService {
   // Get total price
   getTotal(): number {
     const currentCart = this.cartSubject.value;
-    return currentCart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+    const total = currentCart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+    return total;
   }
 
   // Remove item from cart

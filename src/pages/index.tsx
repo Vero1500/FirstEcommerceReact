@@ -6,6 +6,7 @@ import Header from '../app/components/Header';
 import { CartService } from '../app/services/cartService';  // We'll implement this service similar to Angular's cartService
 import { Cart } from '../app/models/cart';
 import Home from '../app/components/home';
+// import { CartProvider } from '../app/context/CartContext';
 
 const cartService = new CartService();
 

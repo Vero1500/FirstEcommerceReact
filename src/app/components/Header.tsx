@@ -5,6 +5,7 @@ import { AppBar, Toolbar, IconButton, Badge, Menu, MenuItem, Typography, Button,
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import { CartService } from '../services/cartService';
+// import { useCart } from '../context/CartContext';
 
 const cartService = new CartService();
 type HeaderProps = {
@@ -12,7 +13,10 @@ type HeaderProps = {
 };
 
 const Header: React.FC<HeaderProps> = ({ cart }) => {
+  // const { cart, clearCart } = useCart();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  // const itemsQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -21,6 +25,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
   return (
     <AppBar position="static" sx={{ padding: '0 20px', display: 'flex', justifyContent: 'center' }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -84,7 +89,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
               {/* Clear Cart Button */}
               <IconButton
                 onClick={() => {
-                  // onClearCart();
+                  cartService.clearCart();
                   handleMenuClose();
                 }}
                 sx={{ color: 'white', backgroundColor: '#d32f2f', ':hover': { backgroundColor: '#c62828' } }}

@@ -1,76 +1,92 @@
 // components/products-header/ProductsHeader.tsx
-import React from 'react';
-import { Card, Menu, MenuItem, IconButton } from '@mui/material';
+import React, {useState, MouseEvent} from 'react';
+import { Card, Menu, MenuItem, IconButton, Typography, Icon, Button } from '@mui/material';
 import SortIcon from '@mui/icons-material/Sort';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import ViewComfyIcon from '@mui/icons-material/ViewComfy';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 type ProductsHeaderProps = {
-  onColumnsCountChange: (cols: number) => void;
-  onItemsCountChange: (count: number) => void;
-  onSortChange: (sort: string) => void;
+  onSortUpdated: (sortOrder: 'asc' | 'desc') => void;
+  onItemsUpdated: (count: number) => void;
+  onColumnsUpdated: (columns: number) => void;
 };
 
 const ProductsHeader: React.FC<ProductsHeaderProps> = ({
-  onColumnsCountChange,
-  onItemsCountChange,
-  onSortChange,
+  onSortUpdated,
+  onItemsUpdated,
+  onColumnsUpdated,
 }) => {
-  const [sort, setSort] = React.useState('desc');
-  const [itemsShowCount, setItemsShowCount] = React.useState(12);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const isMenuOpen = Boolean(anchorEl);
+  const [sort, setSort] = useState<'asc' | 'desc'>('desc');
+  const [itemsShowCount, setItemsShowCount] = useState<number>(12);
+  const [sortMenuAnchorEl, setSortMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [itemsMenuAnchorEl, setItemsMenuAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleSortMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setSortMenuAnchorEl(event.currentTarget);
+  };
+  const handleSortMenuClose = () => {
+    setSortMenuAnchorEl(null);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const handleItemsMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setItemsMenuAnchorEl(event.currentTarget);
+  };
+  const handleItemsMenuClose = () => {
+    setItemsMenuAnchorEl(null);
   };
 
-  const handleSortChange = (newSort: string) => {
+  const handleSortChange = (newSort: 'asc' | 'desc') => {
     setSort(newSort);
-    onSortChange(newSort);
-    handleMenuClose();
+    onSortUpdated(newSort);
+    handleSortMenuClose();
   };
 
-  const handleItemsCountChange = (count: number) => {
+  const handleItemsChange = (count: number) => {
     setItemsShowCount(count);
-    onItemsCountChange(count);
-  };
-
-  const handleColumnCountChange = (cols: number) => {
-    onColumnsCountChange(cols);
+    onItemsUpdated(count);
+    handleItemsMenuClose();
   };
 
   return (
-    <Card sx={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      {/* Sort Options Menu */}
-      <div>
-        <IconButton onClick={handleMenuOpen}>
-          <SortIcon />
-        </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          open={isMenuOpen}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={() => handleSortChange('asc')}>Sort Ascending</MenuItem>
-          <MenuItem onClick={() => handleSortChange('desc')}>Sort Descending</MenuItem>
-        </Menu>
-      </div>
+    <Card sx={{ mb: 4, p: 4 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {/* Sort By Menu */}
+        <div>
+          <Button onClick={handleSortMenuOpen} endIcon={<ExpandMoreIcon/>}>
+            Sort by {sort}
+          </Button>
+          <Menu anchorEl={sortMenuAnchorEl} open={Boolean(sortMenuAnchorEl)} onClose={handleSortMenuClose}>
+            <MenuItem onClick={() => handleSortChange('desc')}>Desc</MenuItem>
+            <MenuItem onClick={() => handleSortChange('asc')}>Asc</MenuItem>
+          </Menu>
+        </div>
 
-      {/* Items Per Page */}
-      <div>
-        <button onClick={() => handleItemsCountChange(12)}>12 Items</button>
-        <button onClick={() => handleItemsCountChange(24)}>24 Items</button>
-        <button onClick={() => handleItemsCountChange(36)}>36 Items</button>
-      </div>
+        {/* Show Items Menu */}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div>
+            <Button onClick={handleItemsMenuOpen} endIcon={<ExpandMoreIcon/>}>
+              Show {itemsShowCount}
+            </Button>
+            <Menu anchorEl={itemsMenuAnchorEl} open={Boolean(itemsMenuAnchorEl)} onClose={handleItemsMenuClose}>
+              <MenuItem onClick={() => handleItemsChange(12)}>12</MenuItem>
+              <MenuItem onClick={() => handleItemsChange(24)}>24</MenuItem>
+              <MenuItem onClick={() => handleItemsChange(36)}>36</MenuItem>
+            </Menu>
+          </div>
 
-      {/* Column Layout Options */}
-      <div>
-        <button onClick={() => handleColumnCountChange(1)}>1 Column</button>
-        <button onClick={() => handleColumnCountChange(3)}>3 Columns</button>
-        <button onClick={() => handleColumnCountChange(4)}>4 Columns</button>
+          {/* Column View Buttons */}
+          <Button onClick={() => onColumnsUpdated(1)}>
+            <ViewListIcon/>
+          </Button>
+          <Button onClick={() => onColumnsUpdated(3)}>
+            <ViewModuleIcon/>
+          </Button>
+          <Button onClick={() => onColumnsUpdated(4)}>
+            <ViewComfyIcon/>
+          </Button>
+        </div>
       </div>
     </Card>
   );

@@ -1,6 +1,6 @@
 // components/Header.tsx
-import React, { useState } from 'react';
-import { Cart } from '../models/cart';
+import React, { useState, useEffect } from 'react';
+import { Cart, CartItem } from '../models/cart';
 import { AppBar, Toolbar, IconButton, Badge, Menu, MenuItem, Typography, Button, Divider, Link } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
@@ -14,9 +14,8 @@ type HeaderProps = {
 
 const Header: React.FC<HeaderProps> = ({ cart }) => {
   // const { cart, clearCart } = useCart();
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  // const itemsQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -25,6 +24,26 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    // Subscribe to cart updates
+    const subscription = cartService.cart$.subscribe((cart) => {
+      console.log("Updated cart:", cart);  // Check if cart updates
+      setCartItems(cart.items);
+    });
+
+    // Cleanup on component unmount
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleClearCart = () => {
+    cartService.clearCart();
+    handleMenuClose(); // Close the menu after clearing the cart
+  };
+
+  //const itemsQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <AppBar position="static" sx={{ padding: '0 20px', display: 'flex', justifyContent: 'center' }}>
@@ -35,7 +54,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
 
         {/* Cart Icon with Badge */}
         <IconButton color="inherit" onClick={handleMenuOpen}> 
-          <Badge badgeContent={cart.items.length} color="error" invisible={!cart.items.length}>
+          <Badge badgeContent={cart.items.length} color="error" invisible={!(cart.items.length)}>
             <ShoppingCartIcon />
           </Badge>
         </IconButton>
@@ -56,7 +75,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
 
             {/* Cart Items */}
             <div style={{ marginTop: '12px' }}>
-              {cart.items.length ? (
+              {cartItems.length ? (
                 cart.items.map((item, index) => (
                   <div
                     key={index}
@@ -88,10 +107,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
               {/* Clear Cart Button */}
               <IconButton
-                onClick={() => {
-                  cartService.clearCart();
-                  handleMenuClose();
-                }}
+                onClick={handleClearCart}
                 sx={{ color: 'white', backgroundColor: '#d32f2f', ':hover': { backgroundColor: '#c62828' } }}
               >
                 <RemoveShoppingCartIcon />

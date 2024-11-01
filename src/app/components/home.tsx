@@ -7,6 +7,9 @@ import ProductBox from './ProductBox';
 import { CartService } from '../services/cartService';
 import StoreService from '../services/storeService';
 import { Product } from '../models/product';
+import Header from '../components/Header';
+
+import { Cart } from '../models/cart';
 
 // import { useCart } from '../context/CartContext';
 
@@ -22,11 +25,23 @@ const Home = () => {
   const [products, setProducts] = useState<Product[] | undefined>(undefined);
   const [sort, setSort] = useState<string>('desc');
   const [count, setCount] = useState<string>('12');
+  const [cart, setCart] = useState<Cart>({ items: [] });
 
   // Fetch products on initial render and when relevant state changes
   useEffect(() => {
     getProducts();
-    cartService.getCartItems(); // Fetch cart items (similarly to ngOnInit)
+    cartService.getCartItems(); 
+    
+    // Subscribe to cart updates from cartService
+    const subscription = cartService.cart$.subscribe((_cart) => {
+      console.log("Updated cart:", _cart);  // Check if cart updates
+      setCart(_cart);
+    });
+
+    // Cleanup subscription when component unmounts
+    return () => subscription.unsubscribe();
+    
+    // Fetch cart items (similarly to ngOnInit)
   }, [count, sort, category]); // Re-fetch products whenever these dependencies change
 
   // Function to get products using StoreService
@@ -47,6 +62,7 @@ const Home = () => {
   };
 
   const onAddToCart = (product: Product) => {
+    console.log('Adding product to cart:', product); // Verify product details
     cartService.addToCart({
       product: product.image,
       name: product.title,
@@ -80,6 +96,9 @@ const Home = () => {
         </Drawer>
          {/* Main Content */}
          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          
+      {/* Pass cart as props to Header */}
+      <Header cart={cart} />
           <ProductsHeader
             onColumnsUpdated={onColumnsCountChange}
             onSortUpdated={onSortChange}

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Cart, CartItem } from '../models/cart';
-import { CartService } from '../services/CartService';
+import { CartService } from '../services/cartService';
 
 // Initialize the CartService
 const cartService = new CartService();

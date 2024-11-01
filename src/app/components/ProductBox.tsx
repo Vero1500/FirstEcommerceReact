@@ -13,6 +13,7 @@ type ProductBoxProps = {
 
 const ProductBox: React.FC<ProductBoxProps> = ({ fullWidthMode = false, product, onAddToCart }) => {
   const handleAddToCart = () => {
+    console.log('Product added:', product); // Verify product to add
     onAddToCart(product);
   };
 

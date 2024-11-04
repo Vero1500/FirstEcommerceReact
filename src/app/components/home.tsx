@@ -42,7 +42,7 @@ const Home = () => {
     return () => subscription.unsubscribe();
     
     // Fetch cart items (similarly to ngOnInit)
-  }, [count, sort, category]); // Re-fetch products whenever these dependencies change
+  }, [count, sort, category, cart]); // Re-fetch products whenever these dependencies change
 
   // Function to get products using StoreService
   const getProducts = () => {
@@ -94,11 +94,10 @@ const Home = () => {
             <Filters onShowCategory={onShowCategory} />
           </Box>
         </Drawer>
-         {/* Main Content */}
-         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          
-      {/* Pass cart as props to Header */}
-      <Header cart={cart} />
+        {/* Main Content */}
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          {/* Pass cart as props to Header */}
+          <Header cart={cart} />
           <ProductsHeader
             onColumnsUpdated={onColumnsCountChange}
             onSortUpdated={onSortChange}

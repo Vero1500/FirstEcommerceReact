@@ -16,6 +16,16 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
   // const { cart, clearCart } = useCart();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  // const [__cart, setCart] = useState<Cart>(cart);
+
+  useEffect(() => {
+    console.log("cart.items:", cart.items);  // Check if cart updates
+    setCartItems(cart.items);
+  }, [cart]);
+
+  
+  
+  console.log("cartItems",cartItems);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -25,22 +35,17 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
     setAnchorEl(null);
   };
 
-  useEffect(() => {
-    // Subscribe to cart updates
-    const subscription = cartService.cart$.subscribe((cart) => {
-      console.log("Updated cart:", cart);  // Check if cart updates
-      setCartItems(cart.items);
-    });
-
-    // Cleanup on component unmount
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
   const handleClearCart = () => {
     cartService.clearCart();
     handleMenuClose(); // Close the menu after clearing the cart
+
+    const subscription = cartService.cart$.subscribe((_cart) => {
+      console.log("Updated cart:", _cart);  // Check if cart updates
+      setCartItems([]);
+    });
+
+    // Cleanup subscription when component unmounts
+    return () => subscription.unsubscribe();
   };
 
   //const itemsQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -54,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
 
         {/* Cart Icon with Badge */}
         <IconButton color="inherit" onClick={handleMenuOpen}> 
-          <Badge badgeContent={cart.items.length} color="error" invisible={!(cart.items.length)}>
+          <Badge badgeContent={cartItems.length} color="error" invisible={!(cartItems.length)}>
             <ShoppingCartIcon />
           </Badge>
         </IconButton>
@@ -64,7 +69,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
           <div style={{ padding: '16px', minWidth: '200px' }}>
             {/* Items Count and View Cart */}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <Typography>{cart.items.length} Items</Typography>
+              <Typography>{cartItems.length} Items</Typography>
               <Button variant='text' href="/cart" color="primary" size="small" onClick={handleMenuClose}>
                 View Cart
               </Button>
@@ -76,7 +81,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
             {/* Cart Items */}
             <div style={{ marginTop: '12px' }}>
               {cartItems.length ? (
-                cart.items.map((item, index) => (
+                cartItems.map((item, index) => (
                   <div
                     key={index}
                     style={{

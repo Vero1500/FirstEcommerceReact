@@ -67,20 +67,20 @@ export class CartService {
   // Get total price
   getTotal(): number {
     const currentCart = this.cartSubject.value;
-    const total = currentCart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+    const total = currentCart.items.reduce((total: Number, item: CartItem) => total + item.price * item.quantity, 0);
     return total;
   }
 
   // Remove item from cart
   removeFromCart(item: CartItem): void {
-    const updatedItems = this.cartSubject.value.items.filter((_item) => _item.id !== item.id);
+    const updatedItems = this.cartSubject.value.items.filter((_item: CartItem) => _item.id !== item.id);
     this.cartSubject.next({ items: updatedItems });
     this.saveCartToLocalStorage({ items: updatedItems });
   }
 
   // Decrease the quantity of an item
   removeQuantity(item: CartItem): void {
-    const updatedItems = this.cartSubject.value.items.map((_item) => {
+    const updatedItems = this.cartSubject.value.items.map((_item: CartItem) => {
       if (_item.id === item.id) {
         _item.quantity--;
         if (_item.quantity === 0) {

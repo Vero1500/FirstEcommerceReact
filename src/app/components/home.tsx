@@ -8,10 +8,7 @@ import { CartService } from '../services/cartService';
 import StoreService from '../services/storeService';
 import { Product } from '../models/product';
 import Header from '../components/Header';
-
 import { Cart } from '../models/cart';
-
-// import { useCart } from '../context/CartContext';
 
 // Equivalent of the ROWS_HEIGHT mapping
 const ROWS_HEIGHT: { [id: number]: number } = { 1: 400, 3: 335, 4: 350 };
@@ -34,7 +31,6 @@ const Home = () => {
     
     // Subscribe to cart updates from cartService
     const subscription = cartService.cart$.subscribe((_cart) => {
-      console.log("Updated cart:", _cart);  // Check if cart updates
       setCart(_cart);
     });
 
@@ -62,7 +58,6 @@ const Home = () => {
   };
 
   const onAddToCart = (product: Product) => {
-    console.log('Adding product to cart:', product); // Verify product details
     cartService.addToCart({
       product: product.image,
       name: product.title,
@@ -78,6 +73,10 @@ const Home = () => {
 
   const onSortChange = (newSort: string) => {
     setSort(newSort);
+  };
+
+  const handleClearCart = () => {
+    cartService.clearCart();
   };
 
   return (
@@ -97,7 +96,7 @@ const Home = () => {
         {/* Main Content */}
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           {/* Pass cart as props to Header */}
-          <Header cart={cart} />
+          <Header cart={cart} onClearCart={handleClearCart}/>
           <ProductsHeader
             onColumnsUpdated={onColumnsCountChange}
             onSortUpdated={onSortChange}

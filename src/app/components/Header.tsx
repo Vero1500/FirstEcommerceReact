@@ -5,27 +5,22 @@ import { AppBar, Toolbar, IconButton, Badge, Menu, MenuItem, Typography, Button,
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import { CartService } from '../services/cartService';
-// import { useCart } from '../context/CartContext';
 
 const cartService = new CartService();
 type HeaderProps = {
   cart: Cart;
+  onClearCart: ()=>void;
 };
 
-const Header: React.FC<HeaderProps> = ({ cart }) => {
-  // const { cart, clearCart } = useCart();
+const Header: React.FC<HeaderProps> = ({ cart, onClearCart }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  // const [__cart, setCart] = useState<Cart>(cart);
 
   useEffect(() => {
-    console.log("cart.items:", cart.items);  // Check if cart updates
     setCartItems(cart.items);
   }, [cart]);
 
-  
-  
-  console.log("cartItems",cartItems);
+  const itemsQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -36,19 +31,9 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
   };
 
   const handleClearCart = () => {
-    cartService.clearCart();
+    onClearCart();
     handleMenuClose(); // Close the menu after clearing the cart
-
-    const subscription = cartService.cart$.subscribe((_cart) => {
-      console.log("Updated cart:", _cart);  // Check if cart updates
-      setCartItems([]);
-    });
-
-    // Cleanup subscription when component unmounts
-    return () => subscription.unsubscribe();
   };
-
-  //const itemsQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <AppBar position="static" sx={{ padding: '0 20px', display: 'flex', justifyContent: 'center' }}>
@@ -59,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
 
         {/* Cart Icon with Badge */}
         <IconButton color="inherit" onClick={handleMenuOpen}> 
-          <Badge badgeContent={cartItems.length} color="error" invisible={!(cartItems.length)}>
+          <Badge badgeContent={itemsQuantity} color="error" invisible={!(itemsQuantity)}>
             <ShoppingCartIcon />
           </Badge>
         </IconButton>
@@ -69,7 +54,7 @@ const Header: React.FC<HeaderProps> = ({ cart }) => {
           <div style={{ padding: '16px', minWidth: '200px' }}>
             {/* Items Count and View Cart */}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <Typography>{cartItems.length} Items</Typography>
+              <Typography>{itemsQuantity} Items</Typography>
               <Button variant='text' href="/cart" color="primary" size="small" onClick={handleMenuClose}>
                 View Cart
               </Button>

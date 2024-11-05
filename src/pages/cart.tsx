@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Cart, CartItem } from '../app/models/cart';
 import { CartService } from '../app/services/cartService'; // Adjust based on your CartService implementation
-// import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import axios from 'axios';
+import dotenv from 'dotenv';
 import {
   Card,
   Button,
@@ -21,6 +23,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Link } from "react-router-dom";
 import Header from '../app/components/Header';
 
+dotenv.config({ path: '../../.env' });
 const cartService = new CartService();
 
 const CartPage = () => {
@@ -64,9 +67,23 @@ const CartPage = () => {
     cartService.removeQuantity(item);
   };
 
+  const onCheckout = async () => {
+    try {
+      const response = await axios.post("http://localhost:4242/checkout", {
+        items: cart.items, // Pass your cart items here
+      });
+      const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY || '');
+      await stripe?.redirectToCheckout({
+        sessionId: response.data.id, // Use the session ID from the server response
+      });
+    } catch (error) {
+      console.error("Checkout error:", error);
+    }
+  };
+
   return (
     <>
-      <Header cart={cart} />
+      <Header cart={cart} onClearCart={handleClearCart} />
       <Card sx={{ maxWidth: 800, margin: 'auto', padding: '20px' }}>
         {dataSource.length > 0 ? (
           <>
@@ -114,7 +131,7 @@ const CartPage = () => {
               <Button variant="contained" color="secondary" onClick={handleClearCart}>
                 Clear Cart
               </Button>
-              <Button variant="contained" color="primary">
+              <Button variant="contained" color="primary" onClick={onCheckout}>
                 Checkout
               </Button>
             </div>
